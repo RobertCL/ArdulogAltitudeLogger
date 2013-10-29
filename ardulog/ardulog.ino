@@ -37,6 +37,7 @@ struct {
 
 unsigned long currentTime;
 unsigned long cloopTime;
+unsigned long cloopBmpTime;
 
 void setup()
 {
@@ -74,6 +75,10 @@ void setup()
     
     Serial.println("ArduLog..OK");     
     openlogfile();    
+    
+    // initialise bmp pressure sensor
+    bmp085Calibration();
+    
     digitalWrite(statusLED, HIGH);  // Logging started 
   }
   else
@@ -83,19 +88,30 @@ void setup()
   }
   currentTime = millis();
   cloopTime = currentTime;
+  cloopBmpTime = currentTime;
 }
 
 void loop()
 {
-  
-   if (Serial.available() > 0) 
+   while (Serial.available() > 0) 
    {
      // Read byte and save to file
      char inByte = Serial.read(); 
      myFile.print(inByte); 
    }
-   
+
    currentTime = millis();
+   
+   if (currentTime >= (cloopBmpTime + 100)) // log temp & pressure data every 100ms
+   {
+     short temperature = bmp085GetTemperature(bmp085ReadUT());
+     long pressure = bmp085GetPressure(bmp085ReadUP());
+     myFile.print("BMP085,");
+     myFile.print(temperature, DEC); // *0.1dec C
+     myFile.print(",");
+     myFile.println(pressure, DEC); // Pa
+   }
+   
    if(currentTime >= (cloopTime + (file_flush*1000)))
    {
        // Flush data to file after (file_flush) seconds
