@@ -21,6 +21,7 @@
 */
  
 #include <SD.h>
+#include <Wire.h>
 
 const int CardDetect = A2;     // the card detect pin
 const int statusLED = 5;       // Green Status LED on pin 5
@@ -76,8 +77,11 @@ void setup()
     Serial.println("ArduLog..OK");     
     openlogfile();    
     
+    Serial.println("Starting bmp");
     // initialise bmp pressure sensor
+    Wire.begin();
     bmp085Calibration();
+    Serial.println("bmp ok");
     
     digitalWrite(statusLED, HIGH);  // Logging started 
   }
@@ -102,7 +106,7 @@ void loop()
 
    currentTime = millis();
    
-   if (currentTime >= (cloopBmpTime + 100)) // log temp & pressure data every 100ms
+   if (currentTime >= (cloopBmpTime + 1000)) // log temp & pressure data every 1000ms
    {
      short temperature = bmp085GetTemperature(bmp085ReadUT());
      long pressure = bmp085GetPressure(bmp085ReadUP());
