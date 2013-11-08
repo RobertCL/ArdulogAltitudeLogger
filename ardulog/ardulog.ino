@@ -57,40 +57,40 @@ void setup()
   // (10 on most Arduino boards, 53 on the Mega) must be left as an output 
   // or the SD library functions will not work. 
   pinMode(10, OUTPUT); 
-    
-  if(!digitalRead(CardDetect))
+  
+  // Wait for card to be present
+  // CardDetect LOW - a card is inserted
+  while(digitalRead(CardDetect))
   {
-    // CardDetect LOW - a card is inserted 
-    if (!SD.begin(10)) {
-      return;
-    }    
-    read_config_file();
+      Serial.println("No card detected");
+      delay(1000);
+  }
 
-    if(config.baud > 0)
-    {
-        Serial.begin(config.baud);
-    }
-    else
-    {
-        // Use default baud
-        Serial.begin(9600);      
-    }
-    
-    Serial.println("ArduLog..OK");     
-    openlogfile();    
-    
-    Serial.println("Starting bmp");
-    // initialise bmp pressure sensor
-    Wire.begin();
-    bmp085Calibration();
+  if (!SD.begin(10)) {
+    return;
+  }    
+  read_config_file();
 
-    Serial.println("Starting logging");    
-    digitalWrite(statusLED, HIGH);  // Logging started 
+  if(config.baud > 0)
+  {
+      Serial.begin(config.baud);
   }
   else
   {
-    Serial.println("No card detected");
+      // Use default baud
+      Serial.begin(9600);      
   }
+  
+  Serial.println("ArduLog..OK");     
+  openlogfile();    
+  
+  Serial.println("Starting bmp");
+  // initialise bmp pressure sensor
+  Wire.begin();
+  bmp085Calibration();
+
+  Serial.println("Starting logging");    
+  digitalWrite(statusLED, HIGH);  // Logging started 
   
   currentTime = millis();
   cloopTime = currentTime;
