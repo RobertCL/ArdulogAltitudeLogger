@@ -14,6 +14,10 @@
   bmp085ReadUT functions.
   
   Updated to Arduino V1.0+
+  
+  Updated Nov 2013, Robert Longbottom, comment out setup and loop
+  to allow integration into other projects.
+  
 */
 
 #include <Wire.h>

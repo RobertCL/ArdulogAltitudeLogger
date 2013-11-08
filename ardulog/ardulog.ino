@@ -1,15 +1,5 @@
 /*
-  ArduLog V1.0
-  Requires Arduino V1.0 and above
 
-  Written by Hobbytronics Ltd (www.hobbytronics.co.uk)
-  This example code is in the public domain.
-  
-  Simple Data Logging program for the Hobbytronics ArduLog board. Please feel free to amend and adapt.
-  
-  Appends all received serial data to the log file
-  Uses pin A1 to start/stop logging
-  
   Configuration is determined by config.txt file which should have the following entries
   
   BAUD xxx
@@ -108,6 +98,7 @@ void loop()
      
      if (inByte == '$')
      {
+       myFile.print("GPS,");
        myFile.print(gpsData);
        gpsData = "";
      }
