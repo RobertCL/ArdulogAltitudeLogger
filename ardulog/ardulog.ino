@@ -40,6 +40,8 @@ unsigned long currentTime;
 unsigned long cloopTime;
 unsigned long cloopBmpTime;
 
+const float p0 = 101325;     // Pressure at sea level (Pa)
+
 void setup()
 {
   int i;
@@ -81,27 +83,36 @@ void setup()
     // initialise bmp pressure sensor
     Wire.begin();
     bmp085Calibration();
-    Serial.println("bmp ok");
-    
+
+    Serial.println("Starting logging");    
     digitalWrite(statusLED, HIGH);  // Logging started 
   }
   else
   {
-    Serial.println("No card detected");     
-    
+    Serial.println("No card detected");
   }
+  
   currentTime = millis();
   cloopTime = currentTime;
   cloopBmpTime = currentTime;
 }
+
+String gpsData;
 
 void loop()
 {
    while (Serial.available() > 0) 
    {
      // Read byte and save to file
-     char inByte = Serial.read(); 
-     myFile.print(inByte); 
+     char inByte = Serial.read();
+     
+     if (inByte == '$')
+     {
+       myFile.print(gpsData);
+       gpsData = "";
+     }
+     
+     gpsData += inByte;
    }
 
    currentTime = millis();
@@ -110,10 +121,14 @@ void loop()
    {
      short temperature = bmp085GetTemperature(bmp085ReadUT());
      long pressure = bmp085GetPressure(bmp085ReadUP());
+     float altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
+
      myFile.print("BMP085,");
      myFile.print(temperature, DEC); // *0.1dec C
      myFile.print(",");
-     myFile.println(pressure, DEC); // Pa
+     myFile.print(pressure, DEC); // Pa
+     myFile.print(",");
+     myFile.println(altitude, 2); // m
    }
    
    if(currentTime >= (cloopTime + (file_flush*1000)))
