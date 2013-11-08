@@ -1,5 +1,4 @@
 /*
-
   Configuration is determined by config.txt file which should have the following entries
   
   BAUD xxx
@@ -7,17 +6,16 @@
   
   Green LED lights up to indicate logging has started, extinguishes when logging stopped
   Orange LED indicates data activity
-
 */
  
 #include <SD.h>
 #include <Wire.h>
 
-const int CardDetect = A2;     // the card detect pin
-const int statusLED = 5;       // Green Status LED on pin 5
-const int file_flush = 2;      // Force data write to file after x seconds 
-
-File myFile;
+const int CardDetect = A2;         // the card detect pin
+const int StatusLED = 5;           // Green Status LED on pin 5
+const int flushInterval = 2000;    // Force data write to file after x ms
+const int bmpReadInterval = 1000;  // read bmp pressure data every x ms
+const float p0 = 101325;           // Pressure at sea level (Pa)
 
 // Struct to hold config info from config.txt file
 struct {
@@ -26,17 +24,17 @@ struct {
   char filename[20];    // filename to log data
 } config;
 
-unsigned long currentTime;
-unsigned long cloopTime;
-unsigned long cloopBmpTime;
+String gpsData;
+File myFile;
 
-const float p0 = 101325;     // Pressure at sea level (Pa)
+unsigned long currentTime;
+unsigned long flushTime;
+unsigned long bmpReadTime;
 
 void setup()
 {
-  int i;
   pinMode(CardDetect, INPUT);  // Card Detect
-  pinMode(statusLED, OUTPUT);  // Status LED
+  pinMode(StatusLED, OUTPUT);  // Status LED
   
   // Default config settings - override with config file "config.txt" if required
   config.baud = 0;
@@ -62,40 +60,33 @@ void setup()
   read_config_file();
 
   if(config.baud > 0)
-  {
       Serial.begin(config.baud);
-  }
   else
-  {
-      // Use default baud
-      Serial.begin(9600);      
-  }
+      Serial.begin(9600);      // Use default baud
   
-  Serial.println("ArduLog..OK");     
-  openlogfile();    
+  Serial.println("ArduLog..OK");
+  openlogfile();
   
   Serial.println("Starting bmp");
-  // initialise bmp pressure sensor
   Wire.begin();
   bmp085Calibration();
 
   Serial.println("Starting logging");    
-  digitalWrite(statusLED, HIGH);  // Logging started 
+  digitalWrite(StatusLED, HIGH);  // Logging started 
   
   currentTime = millis() % 1000;
-  cloopTime = currentTime;
-  cloopBmpTime = currentTime;
+  flushTime = currentTime;
+  bmpReadTime = currentTime;
 }
-
-String gpsData;
 
 void loop()
 {
-   while (Serial.available() > 0) 
+   if (Serial.available() > 0) 
    {
-     // Read byte and save to file
      char inByte = Serial.read();
      
+     // If start of new GPS line data, write current buffered line to file
+     // and clear buffer.
      if (inByte == '$')
      {
        myFile.print("GPS,");
@@ -108,12 +99,14 @@ void loop()
 
    currentTime = millis();
    
-   if (currentTime >= (cloopBmpTime + 1000)) // log temp & pressure data every 1000ms
+   if (currentTime >= (bmpReadTime + (bmpReadInterval))) // log temp & pressure data
    {
+     // Read data
      short temperature = bmp085GetTemperature(bmp085ReadUT());
      long pressure = bmp085GetPressure(bmp085ReadUP());
      float altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
 
+     // Log to file
      myFile.print("BMP085,");
      myFile.print(currentTime, DEC); // time since boot
      myFile.print(",");
@@ -122,13 +115,16 @@ void loop()
      myFile.print(pressure, DEC); // Pa
      myFile.print(",");
      myFile.println(altitude, 2); // m
+     
+     // Update last read time (trying to stick to target interval)
+     bmpReadTime += (bmpReadInterval*1000);
    }
    
-   if(currentTime >= (cloopTime + (file_flush*1000)))
+   if(currentTime >= (flushTime + (flushInterval)))
    {
-       // Flush data to file after (file_flush) seconds
+       // Flush data to file
        myFile.flush();
-       cloopTime = currentTime;  // Updates cloopTime
+       flushTime = currentTime;
    }  
 }
 
