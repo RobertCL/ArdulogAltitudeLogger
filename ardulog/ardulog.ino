@@ -92,7 +92,7 @@ void setup()
   Serial.println("Starting logging");    
   digitalWrite(statusLED, HIGH);  // Logging started 
   
-  currentTime = millis();
+  currentTime = millis() % 1000;
   cloopTime = currentTime;
   cloopBmpTime = currentTime;
 }
@@ -124,6 +124,8 @@ void loop()
      float altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
 
      myFile.print("BMP085,");
+     myFile.print(currentTime, DEC); // time since boot
+     myFile.print(",");
      myFile.print(temperature, DEC); // *0.1dec C
      myFile.print(",");
      myFile.print(pressure, DEC); // Pa
