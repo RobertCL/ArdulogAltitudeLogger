@@ -74,7 +74,7 @@ void setup()
   Serial.println("Starting logging");    
   digitalWrite(StatusLED, HIGH);  // Logging started 
   
-  currentTime = millis() % 1000;
+  currentTime = millis() / 1000; // round to nearest second
   flushTime = currentTime;
   bmpReadTime = currentTime;
 }
