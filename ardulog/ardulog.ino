@@ -117,7 +117,7 @@ void loop()
      myFile.println(altitude, 2); // m
      
      // Update last read time (trying to stick to target interval)
-     bmpReadTime += (bmpReadInterval*1000);
+     bmpReadTime += (bmpReadInterval);
    }
    
    if(currentTime >= (flushTime + (flushInterval)))
