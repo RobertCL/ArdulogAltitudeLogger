@@ -90,6 +90,8 @@ void loop()
      if (inByte == '$')
      {
        myFile.print("GPS,");
+       myFile.print(currentTime, DEC); // time since boot
+       myFile.print(",");
        myFile.print(gpsData);
        gpsData = "";
      }
