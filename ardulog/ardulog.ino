@@ -15,13 +15,13 @@ const int CardDetect = A2;         // the card detect pin
 const int StatusLED = 5;           // Green Status LED on pin 5
 const int flushInterval = 2000;    // Force data write to file after x ms
 const int bmpReadInterval = 1000;  // read bmp pressure data every x ms
-const float p0 = 101325;           // Pressure at sea level (Pa)
 
 // Struct to hold config info from config.txt file
 struct {
-  unsigned int baud;    // baud rate
-  char fileprefix[20];  // filename prefix  
-  char filename[20];    // filename to log data
+  unsigned int baud;        // baud rate
+  char fileprefix[20];      // filename prefix  
+  char filename[20];        // filename to log data
+  float pressureAtSeaLevel; // Pressure at sea level (Pa) - 101325?
 } config;
 
 String gpsData;
@@ -38,6 +38,7 @@ void setup()
   
   // Default config settings - override with config file "config.txt" if required
   config.baud = 0;
+  config.pressureAtSeaLevel = 0;
   strcpy(config.fileprefix, "LOG.");  
   strcpy(config.filename, "LOG.001");
   
@@ -106,7 +107,12 @@ void loop()
      // Read data
      short temperature = bmp085GetTemperature(bmp085ReadUT());
      long pressure = bmp085GetPressure(bmp085ReadUP());
-     float altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
+     
+     // Initialize pressure at sea level, or launch pressure
+     if (config.pressureAtSeaLevel == 0)
+       config.pressureAtSeaLevel = (float)pressure;
+     
+     float altitude = (float)44330 * (1 - pow(((float) pressure/config.pressureAtSeaLevel), 0.190295));
 
      // Log to file
      myFile.print("BMP085,");

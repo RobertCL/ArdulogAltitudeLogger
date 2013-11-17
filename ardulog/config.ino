@@ -88,6 +88,11 @@ void read_config_file(void)
               strcpy(config.fileprefix, param);
               strcat(config.fileprefix,".");
             }            
+            if (!strncmp(configData, "PASL", 4))
+            {
+              GetParam(configData, param);
+              config.pressureAtSeaLevel = (float)strtoi(param);
+            }
           }
           i=0;          
         }  
