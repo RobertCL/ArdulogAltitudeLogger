@@ -22,32 +22,32 @@
 			</DockPanel>
 			<DockPanel>
 				<ctk:Chart x:Name="chart" Title="Barometer Data">
+					
 					<ctk:Chart.Axes>
-						<ctk:LinearAxis Orientation="X" Title="Time Since Launch (secs)" />
+						<ctk:DateTimeAxis Orientation="X" Title="Time" />
 					</ctk:Chart.Axes>
 
 					<ctk:LineSeries x:Name="sAltitude"
 						Title="Altitude"
 						DependentValuePath="Altitude"
-						IndependentValuePath="SecondsFromStart" 
+						IndependentValuePath="TimeFromStart" 
 						ItemsSource="{Binding BarometerChartData}" 
 						DataPointStyle="{StaticResource AltitudeDataPoint}">
-						<ctk:LineSeries.DependentRangeAxis>
-							<ctk:LinearAxis Orientation="Y" Title="Altitude(m)" />
+							<ctk:LineSeries.DependentRangeAxis>
+								<ctk:LinearAxis Orientation="Y" Title="Altitude(m)" />
 						</ctk:LineSeries.DependentRangeAxis>
 					</ctk:LineSeries>
 
-					<ctk:LineSeries
-						Title="Temp"
+					<ctk:LineSeries x:Name="sTemperature"
+						Title="Temperature"
 						DependentValuePath="Temperature"
-						IndependentValuePath="SecondsFromStart" 
+						IndependentValuePath="TimeFromStart" 
 						ItemsSource="{Binding BarometerChartData}" 
 						DataPointStyle="{StaticResource TemperatureDataPoint}">
-						<ctk:LineSeries.DependentRangeAxis>
-							<ctk:LinearAxis Orientation="Y" Title="Temp(oC)" />
-						</ctk:LineSeries.DependentRangeAxis>
+							<ctk:LineSeries.DependentRangeAxis>
+								<ctk:LinearAxis Orientation="Y" Title="Temp(oC)" />
+							</ctk:LineSeries.DependentRangeAxis>
 					</ctk:LineSeries>
-
 
 				</ctk:Chart>
 			</DockPanel>

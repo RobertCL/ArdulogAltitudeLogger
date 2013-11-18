@@ -12,8 +12,6 @@ namespace AltitudeLogViewer
 			InitializeComponent();
 			model = new MainWindowViewModel();
 			DataContext = model;
-
-			
 		}
 
 		private void SelectLogFileButton_DragEnter(object sender, DragEventArgs e)
