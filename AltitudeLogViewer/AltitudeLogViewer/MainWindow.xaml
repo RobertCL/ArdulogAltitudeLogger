@@ -1,0 +1,56 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:ctk="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+		x:Class="AltitudeLogViewer.MainWindow"
+        Title="Altitude Log Viewer" Height="350" Width="522">
+	<Window.Resources>
+		<Style x:Key="AltitudeDataPoint" TargetType="{x:Type ctk:DataPoint}">
+			<Setter Property="Template" Value="{x:Null}" />
+			<Setter Property="Background" Value="Green" />
+		</Style>
+		<Style x:Key="TemperatureDataPoint" TargetType="{x:Type ctk:DataPoint}">
+			<Setter Property="Template" Value="{x:Null}" />
+			<Setter Property="Background" Value="Blue" />
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<DockPanel>
+			<DockPanel DockPanel.Dock="Top">
+				<Button DockPanel.Dock="Right" Width="95" AllowDrop="True" DragEnter="SelectLogFileButton_DragEnter" Drop="SelectLogFileButton_Drop"  Command="{Binding SelectLogFileCommand}" Content="Select Log File"/>
+				<TextBox IsEnabled="False" Text="{Binding LogFileName}" />
+			</DockPanel>
+			<DockPanel>
+				<ctk:Chart x:Name="chart" Title="Barometer Data">
+					<ctk:Chart.Axes>
+						<ctk:LinearAxis Orientation="X" Title="Time Since Launch (secs)" />
+					</ctk:Chart.Axes>
+
+					<ctk:LineSeries x:Name="sAltitude"
+						Title="Altitude"
+						DependentValuePath="Altitude"
+						IndependentValuePath="SecondsFromStart" 
+						ItemsSource="{Binding BarometerChartData}" 
+						DataPointStyle="{StaticResource AltitudeDataPoint}">
+						<ctk:LineSeries.DependentRangeAxis>
+							<ctk:LinearAxis Orientation="Y" Title="Altitude(m)" />
+						</ctk:LineSeries.DependentRangeAxis>
+					</ctk:LineSeries>
+
+					<ctk:LineSeries
+						Title="Temp"
+						DependentValuePath="Temperature"
+						IndependentValuePath="SecondsFromStart" 
+						ItemsSource="{Binding BarometerChartData}" 
+						DataPointStyle="{StaticResource TemperatureDataPoint}">
+						<ctk:LineSeries.DependentRangeAxis>
+							<ctk:LinearAxis Orientation="Y" Title="Temp(oC)" />
+						</ctk:LineSeries.DependentRangeAxis>
+					</ctk:LineSeries>
+
+
+				</ctk:Chart>
+			</DockPanel>
+		</DockPanel>
+	</Grid>
+</Window>
