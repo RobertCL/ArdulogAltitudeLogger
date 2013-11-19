@@ -26,14 +26,16 @@ namespace AltitudeLogViewer
 			}
 		}
 
-		private List<BarometerReading> BarometerData;
+		private List<BarometerReading> barometerData;
 		public ObservableCollection<BarometerReading> BarometerChartData { get; set; }
-		
+		private List<GpsGgaReading> gpsData;
+		public ObservableCollection<GpsGgaReading> GpsChartData { get; set; }
 
 		public MainWindowViewModel()
 		{
 			SelectLogFileCommand = new DelegateCommand(SelectLogFile);
 			BarometerChartData = new ObservableCollection<BarometerReading>();
+			GpsChartData = new ObservableCollection<GpsGgaReading>();
 		}
 
 		private void SelectLogFile(object obj)
@@ -48,7 +50,8 @@ namespace AltitudeLogViewer
 		{
 			var parser = new LogParser(LogFileName);
 
-			BarometerData = parser.BarometerReadings;
+			barometerData = parser.BarometerReadings;
+			gpsData = parser.GpsGgaReadings;
 
 			FillChartData();
 		}
@@ -58,10 +61,13 @@ namespace AltitudeLogViewer
 			BarometerChartData.Clear();
 
 			// Make sure we end up with about 500 points on the screen (otherwise charting component is slow)
-			int skip = BarometerData.Count() / 500;
+			int skip = barometerData.Count() / 500;
 
-			foreach (var r in BarometerData.Where((r, i) => i % skip == 0))
+			foreach (var r in barometerData.Where((r, i) => i % skip == 0))
 				BarometerChartData.Add(r);
+
+			foreach (var r in gpsData.Where((r, i) => i % skip == 0))
+				GpsChartData.Add(r);
 		}
 	}
 }

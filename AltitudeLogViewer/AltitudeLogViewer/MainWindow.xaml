@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:ctk="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
 		x:Class="AltitudeLogViewer.MainWindow"
-        Title="Altitude Log Viewer" Height="350" Width="522">
+        Title="Altitude Log Viewer" Height="412" Width="522">
 	<Window.Resources>
 		<Style x:Key="AltitudeDataPoint" TargetType="{x:Type ctk:DataPoint}">
 			<Setter Property="Template" Value="{x:Null}" />
@@ -21,35 +21,85 @@
 				<TextBox IsEnabled="False" Text="{Binding LogFileName}" />
 			</DockPanel>
 			<DockPanel>
-				<ctk:Chart x:Name="chart" Title="Barometer Data">
-					
-					<ctk:Chart.Axes>
-						<ctk:DateTimeAxis Orientation="X" Title="Time" />
-					</ctk:Chart.Axes>
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
 
-					<ctk:LineSeries x:Name="sAltitude"
-						Title="Altitude"
-						DependentValuePath="Altitude"
-						IndependentValuePath="TimeFromStart" 
-						ItemsSource="{Binding BarometerChartData}" 
-						DataPointStyle="{StaticResource AltitudeDataPoint}">
+					<GridSplitter HorizontalAlignment="Stretch" 
+								  VerticalAlignment="Stretch" 
+								  ResizeDirection="Rows"
+								  Grid.Column="0" 
+								  Grid.Row="1"
+								  ResizeBehavior="PreviousAndNext"
+								  Height="5" 
+								  Background="#FFBCBCBC"/>
+
+					<ctk:Chart Grid.Row="0" Grid.Column="0" Title="Barometer Data">
+					
+						<ctk:Chart.Axes>
+							<ctk:DateTimeAxis Orientation="X" Title="Time" />
+						</ctk:Chart.Axes>
+
+						<ctk:LineSeries
+							Title="Altitude"
+							DependentValuePath="Altitude"
+							IndependentValuePath="TimeFromStart" 
+							ItemsSource="{Binding BarometerChartData}" 
+							DataPointStyle="{StaticResource AltitudeDataPoint}">
+								<ctk:LineSeries.DependentRangeAxis>
+									<ctk:LinearAxis Orientation="Y" Title="Altitude(m)" />
+							</ctk:LineSeries.DependentRangeAxis>
+						</ctk:LineSeries>
+
+						<ctk:LineSeries
+							Title="Temp"
+							DependentValuePath="Temperature"
+							IndependentValuePath="TimeFromStart" 
+							ItemsSource="{Binding BarometerChartData}" 
+							DataPointStyle="{StaticResource TemperatureDataPoint}">
+								<ctk:LineSeries.DependentRangeAxis>
+									<ctk:LinearAxis Orientation="Y" Title="Temp(oC)" />
+								</ctk:LineSeries.DependentRangeAxis>
+						</ctk:LineSeries>
+
+					</ctk:Chart>
+
+					<ctk:Chart Grid.Row="2" Grid.Column="0" Title="GPS Data">
+
+						<ctk:Chart.Axes>
+							<ctk:DateTimeAxis Orientation="X" Title="Time" />
+						</ctk:Chart.Axes>
+
+						<ctk:LineSeries
+							Title="Altitude"
+							DependentValuePath="Altitude"
+							IndependentValuePath="TimeFromStart" 
+							ItemsSource="{Binding GpsChartData}" 
+							DataPointStyle="{StaticResource AltitudeDataPoint}">
 							<ctk:LineSeries.DependentRangeAxis>
 								<ctk:LinearAxis Orientation="Y" Title="Altitude(m)" />
-						</ctk:LineSeries.DependentRangeAxis>
-					</ctk:LineSeries>
-
-					<ctk:LineSeries x:Name="sTemperature"
-						Title="Temperature"
-						DependentValuePath="Temperature"
-						IndependentValuePath="TimeFromStart" 
-						ItemsSource="{Binding BarometerChartData}" 
-						DataPointStyle="{StaticResource TemperatureDataPoint}">
-							<ctk:LineSeries.DependentRangeAxis>
-								<ctk:LinearAxis Orientation="Y" Title="Temp(oC)" />
 							</ctk:LineSeries.DependentRangeAxis>
-					</ctk:LineSeries>
+						</ctk:LineSeries>
 
-				</ctk:Chart>
+						<ctk:LineSeries
+							Title="HDOP"
+							DependentValuePath="Hdop"
+							IndependentValuePath="TimeFromStart" 
+							ItemsSource="{Binding GpsChartData}" 
+							DataPointStyle="{StaticResource TemperatureDataPoint}">
+							<ctk:LineSeries.DependentRangeAxis>
+								<ctk:LinearAxis Orientation="Y" Title ="HDOP (&lt;2 = good)" Minimum="0" />
+							</ctk:LineSeries.DependentRangeAxis>
+						</ctk:LineSeries>
+
+					</ctk:Chart>
+				</Grid>
 			</DockPanel>
 		</DockPanel>
 	</Grid>

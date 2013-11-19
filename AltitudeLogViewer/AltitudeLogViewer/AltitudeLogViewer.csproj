@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ReadingBase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -74,6 +75,7 @@
     <Compile Include="BarometerReading.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="GpsGgaReading.cs" />
     <Compile Include="LogParser.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
