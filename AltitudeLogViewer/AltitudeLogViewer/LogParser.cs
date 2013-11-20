@@ -29,15 +29,21 @@ namespace AltitudeLogViewer
 
 			// Convert gps data into something we can work with
 			GpsGgaReadings = new List<GpsGgaReading>();
+			var haveFix = false;
 			foreach (var line in gpsLines)
 			{
 				try
 				{
 					var parts = line.Split(',');
-					if (parts[2] == "$GPRMC")
+					if (haveFix && parts[2] == "$GPRMC")
 						ParseGprmc(parts);
 					else if (parts[2] == "$GPGGA")
-						GpsGgaReadings.Add(GpsGgaReading.FromLogLine(line));
+					{
+						var r = GpsGgaReading.FromLogLine(line);
+						GpsGgaReadings.Add(r);
+						if (r.Fix == GpsGgaReading.FixQuality.GPS)
+							haveFix = true;
+					}
 				}
 				catch (Exception)
 				{
@@ -46,11 +52,11 @@ namespace AltitudeLogViewer
 			}
 
 			// Fix up times (hopefully we have got something from the GPS
-			if (null != TimeSync.ZeroDate)
-			{
-				BarometerReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
-				GpsGgaReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
-			}
+			if (null == TimeSync)
+				TimeSync = new TimeSync { Date = DateTime.Now };
+		
+			BarometerReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
+			GpsGgaReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
 		}
 
 		/// <summary>

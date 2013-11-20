@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace AltitudeLogViewer
 {
 	class GpsGgaReading : ReadingBase
@@ -36,9 +37,23 @@ namespace AltitudeLogViewer
 			negative altitudes at all. This is the only sentence that reports altitude.
 		*/
 
+		public enum FixQuality
+		{
+			Invalid = 0,
+			GPS,
+			DGPS,
+			PPS,
+			RTK,
+			FRTK,
+			Estimated,
+			Manual,
+			Simulation
+		}
+
 		public int NumberOfSatellites { get; protected set; }
 		public decimal Hdop { get; protected set; }
 		public decimal Altitude { get; protected set; }
+		public FixQuality Fix { get; protected set; }
 
 		public static GpsGgaReading FromLogLine(string line)
 		{
@@ -50,6 +65,7 @@ namespace AltitudeLogViewer
 				NumberOfSatellites = int.Parse(parts[9]),
 				Hdop = decimal.Parse(parts[10]),
 				Altitude = decimal.Parse(parts[11]),
+				Fix = (FixQuality)Enum.Parse(typeof(FixQuality), parts[8])
 			};
 
 			return reading;
