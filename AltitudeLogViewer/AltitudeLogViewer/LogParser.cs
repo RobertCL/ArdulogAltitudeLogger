@@ -24,6 +24,9 @@ namespace AltitudeLogViewer
 			var bmpLines = lines.Where(l => l.StartsWith("BMP"));
 			var gpsLines = lines.Where(l => l.StartsWith("GPS"));
 
+			File.WriteAllLines(fileName + ".baro", bmpLines);
+			File.WriteAllLines(fileName + ".gps", gpsLines.Select(l => l.Substring(l.IndexOf('$'))));
+
 			// Convert barometer data into something we can work with
 			BarometerReadings = bmpLines.ToList().ConvertAll(new Converter<string, BarometerReading>(s => BarometerReading.FromLogFileLine(s)));
 
