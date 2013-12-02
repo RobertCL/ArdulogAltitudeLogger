@@ -56,7 +56,7 @@ namespace AltitudeLogViewer
 
 			// Fix up times (hopefully we have got something from the GPS
 			if (null == TimeSync)
-				TimeSync = new TimeSync { Date = DateTime.Now };
+				TimeSync = new TimeSync { Date = DateTime.Today };
 		
 			BarometerReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
 			GpsGgaReadings.ForEach(r => r.LogStartTime = TimeSync.ZeroDate);
