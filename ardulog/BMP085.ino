@@ -24,7 +24,7 @@
 
 #define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
-const unsigned char OSS = 0;  // Oversampling Setting
+const unsigned char OSS = 3;  // Oversampling Setting
 
 // Calibration values
 int ac1;
