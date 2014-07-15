@@ -22,7 +22,7 @@ namespace AltitudeLogViewer
 			var lines = File.ReadAllLines(fileName);
 
 			var bmpLines = lines.Where(l => l.StartsWith("BMP"));
-			var gpsLines = lines.Where(l => l.StartsWith("GPS"));
+			var gpsLines = lines.Where(l => l.StartsWith("GPS") && l.Contains("$"));
 
 			File.WriteAllLines(fileName + ".baro", bmpLines);
 			File.WriteAllLines(fileName + ".gps", gpsLines.Select(l => l.Substring(l.IndexOf('$'))));
