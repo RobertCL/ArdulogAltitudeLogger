@@ -63,6 +63,8 @@ namespace AltitudeLogViewer
 			// Make sure we end up with about 500 points on the screen (otherwise charting component is slow)
 			int skip = barometerData.Count() / 500;
 
+			if (skip == 0) skip = 1;
+
 			foreach (var r in barometerData.Where((r, i) => i % skip == 0))
 				BarometerChartData.Add(r);
 
